@@ -1,6 +1,6 @@
-// cartodb.js version: 3.2.04
+// cartodb.js version: 3.2.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 765503bc8f5ed94aee921acf2bb53f45ebab406d
+// sha: 5c42b2f4fe3fd66fc8b72a06d7caeb81a33fee27
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.04';
+    cdb.VERSION = '3.2.05-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -25252,6 +25252,7 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this.setInteraction(true);
+    this.trigger('show');
   },
 
   hide: function() {
@@ -25260,6 +25261,7 @@ CartoDBLayerCommon.prototype = {
     }
     this.setOpacity(0);
     this.setInteraction(false);
+    this.trigger('hide');
   },
 
   /**
@@ -28752,7 +28754,7 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addLegends: function(layers) {
+  addLegends: function(layers, layerView) {
     function createLegendView(layers) {
       var legends = [];
       for(var i = layers.length - 1; i>= 0; --i) {
@@ -28777,6 +28779,12 @@ var Vis = cdb.core.View.extend({
        legends: legends
     });
     this.legends = stackedLegend;
+
+    if(layerView){
+      // show/hide this legend in connection with the view that created it
+      layerView.on('hide',function(eventName){stackedLegend.hide();});
+      layerView.on('show',function(eventName){stackedLegend.show();});
+    }
 
     this.mapView.addOverlay(stackedLegend);
   },
@@ -29768,7 +29776,7 @@ Layers.register('layergroup', function(vis, data) {
         viz.addInfowindow(layerView);
       }
       if(options.legends) {
-        viz.addLegends([layerData]);
+        viz.addLegends([layerData],layerView);
       }
       callback && callback(layerView);
       promise.trigger('done', layerView);

@@ -261,7 +261,7 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addLegends: function(layers) {
+  addLegends: function(layers, layerView) {
     function createLegendView(layers) {
       var legends = [];
       for(var i = layers.length - 1; i>= 0; --i) {
@@ -286,6 +286,12 @@ var Vis = cdb.core.View.extend({
        legends: legends
     });
     this.legends = stackedLegend;
+
+    if(layerView){
+      // show/hide this legend in connection with the view that created it
+      layerView.on('hide',function(eventName){stackedLegend.hide();});
+      layerView.on('show',function(eventName){stackedLegend.show();});
+    }
 
     this.mapView.addOverlay(stackedLegend);
   },

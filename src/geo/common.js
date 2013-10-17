@@ -14,6 +14,7 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this.setInteraction(true);
+    this.trigger('show');
   },
 
   hide: function() {
@@ -22,6 +23,7 @@ CartoDBLayerCommon.prototype = {
     }
     this.setOpacity(0);
     this.setInteraction(false);
+    this.trigger('hide');
   },
 
   /**

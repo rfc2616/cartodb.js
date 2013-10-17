@@ -155,7 +155,7 @@
         viz.addInfowindow(layerView);
       }
       if(options.legends) {
-        viz.addLegends([layerData]);
+        viz.addLegends([layerData],layerView);
       }
       callback && callback(layerView);
       promise.trigger('done', layerView);
